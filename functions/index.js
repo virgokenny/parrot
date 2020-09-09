@@ -22,6 +22,34 @@ const coursesMap = new Map([
 //   response.send('Hello from Firebase!');
 // });
 
+const pushNotification = (title, message) => {
+  const postData = {
+    body: message,
+    data: {},
+    title: title,
+    to: [
+      'ExponentPushToken[hBrGnAEl4_LHC4ojk8opXG]', // Kenny
+      //'ExponentPushToken[b3pcTpIvwk3fV-ukkKWopp]', // Michelle
+      //'ExponentPushToken[I7i7nOGaKmm3eT4nAgzTdc]', // Shaquille
+    ],
+  };
+
+  const options = {
+    url: 'https://exp.host/--/api/v2/push/send',
+    json: true,
+    body: postData,
+  };
+
+  return request.post(options, (err, res, body) => {
+    if (err) {
+      return console.log(err);
+    }
+    console.log(`Status: ${res.statusCode}`);
+    console.log(body);
+    return true;
+  });
+};
+
 exports.completeCourses = functions.firestore
   .document('completeCourses/{docId}')
   .onCreate((snap, context) => {
@@ -34,31 +62,29 @@ exports.completeCourses = functions.firestore
       coursesMap.get(courseId) +
       '"';
 
-    const postData = {
-      body: message,
-      data: {},
-      title: 'New Complete Course',
-      to: [
-        'ExponentPushToken[hBrGnAEl4_LHC4ojk8opXG]', // Kenny
-        'ExponentPushToken[b3pcTpIvwk3fV-ukkKWopp]', // Michelle
-        'ExponentPushToken[I7i7nOGaKmm3eT4nAgzTdc]', // Shaquille
-      ],
-    };
+    return pushNotification('New Completed Course', message);
+  });
 
-    const options = {
-      url: 'https://exp.host/--/api/v2/push/send',
-      json: true,
-      body: postData,
-    };
+exports.finalCheck = functions.firestore
+  .document('completeCourses/{docId}')
+  .onUpdate((change, context) => {
+    const newStatus = change.after.data()['status'];
+    const previousStatus = change.before.data()['status'];
 
-    request.post(options, (err, res, body) => {
-      if (err) {
-        return console.log(err);
-      }
-      console.log(`Status: ${res.statusCode}`);
-      console.log(body);
-      return true;
-    });
+    if (
+      (previousStatus === 'progress' || previousStatus === 'new') &&
+      newStatus === 'final_check'
+    ) {
+      const courseId = change.after.data()['courseId'];
+      const userName = change.after.data()['userName'];
+      const message =
+        'Please check the course "' +
+        coursesMap.get(courseId) +
+        '" is own by ' +
+        userName;
 
-    return true;
+      return pushNotification('Final Check', message);
+    }
+
+    return false;
   });
