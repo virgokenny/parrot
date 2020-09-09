@@ -29,8 +29,8 @@ const pushNotification = (title, message) => {
     title: title,
     to: [
       'ExponentPushToken[hBrGnAEl4_LHC4ojk8opXG]', // Kenny
-      //'ExponentPushToken[b3pcTpIvwk3fV-ukkKWopp]', // Michelle
-      //'ExponentPushToken[I7i7nOGaKmm3eT4nAgzTdc]', // Shaquille
+      'ExponentPushToken[b3pcTpIvwk3fV-ukkKWopp]', // Michelle
+      'ExponentPushToken[I7i7nOGaKmm3eT4nAgzTdc]', // Shaquille
     ],
   };
 
