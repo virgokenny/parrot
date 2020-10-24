@@ -4,7 +4,7 @@
   "scripts": {
     "login": "firebase login",
     "lint": "eslint .",
-    "serve": "firebase emulators:start --only firestore,functions --export-on-exit=firstore --import=firestore",
+    "serve": "firebase emulators:start --only firestore,functions --export-on-exit=firestore --import=firestore",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
