@@ -8,6 +8,15 @@
   "firestore": {
     "rules": "firestore.rules"
   },
+  "hosting": {
+    "public": "",
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  },
   "emulators": {
     "firestore": {
       "port": "8080"
@@ -18,6 +27,7 @@
       "port": 4000
     },
     "functions": {
+      "host": "192.168.8.103",
       "port": "5001"
     },
     "database": {
@@ -25,6 +35,11 @@
     },
     "pubsub": {
       "port": "8085"
+    },
+    "hosting": {
+      "public": "/tappay",
+      "host": "192.168.8.103",
+      "port": 5000
     }
   }
 }

@@ -7,6 +7,17 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore();
 
+const TapPay = require('tappay-nodejs');
+
+const partner_key =
+  'partner_He1Nd27h3XSbQZ81aHls59pQY5QORYDAlGHtUocidbRuAnmsZeCoJUOj';
+
+// You just need to initilize the config once.
+TapPay.initialize({
+  partner_key: partner_key,
+  env: 'sandbox',
+});
+
 const coursesMap = new Map([
   [2001, 'Whats Your Favorite Dessert'],
   [2002, 'Traveling To New Places'],
@@ -167,3 +178,36 @@ exports.finalCheck = functions.firestore
 
     return false;
   });
+
+exports.payByPrime = functions.https.onRequest((request, response) => {
+  request.allparams = Object.assign(request.query, request.body);
+  console.log(request.path);
+  console.log('params', request.allparams);
+
+  const paymentInfo = {
+    prime: request.allparams['prime'],
+    merchant_id: 'virgokenny_ESUN',
+    amount: 1,
+    currency: 'TWD',
+    details: 'An apple and a pen.',
+    cardholder: {
+      phone_number: '+886923456789',
+      name: '王小明',
+      email: 'LittleMing@Wang.com',
+    },
+    remember: true,
+  };
+
+  return TapPay.payByPrime(paymentInfo)
+    .then((result) => {
+      console.log(result);
+      response.set('Access-Control-Allow-Origin', '*');
+      response.set('Access-Control-Allow-Methods', 'GET, POST');
+      response.status(200).end();
+      return;
+    })
+    .catch((error) => {
+      console.log(error);
+      response.status(500).end();
+    });
+});
